@@ -13,40 +13,21 @@ player = Player()
 screen.onkey(player.move_up, "Up")
 scoreboard = Scoreboard()
 game_is_on = True
-all_cars = []
 
-
-def generate_random_cars():
-    car_manager = CarManager()
-    all_cars.append(car_manager)
-
-
-def move_car():
-    for car in all_cars:
-        if car.distance(player) < 40:
-            return False
-        elif car.xcor() < -320:
-            car.goto_start_position()
-        else:
-            car.move_forward()
-    return True
-
-
-def increase_car_speed():
-    for car in all_cars:
-        car.increase_speed()
-
+car_manager = CarManager()
 
 while game_is_on:
-    if len(all_cars) < 5:
-        generate_random_cars()
-    if not move_car():
-        game_is_on = False
-        scoreboard.game_over()
-    if player.ycor() >= 280:
-        scoreboard.update_scoreboard()
-        increase_car_speed()
-        player.reset_turtle()
+
     time.sleep(0.1)
     screen.update()
+    car_manager.create_car()
+    car_manager.move_forward()
+    for car in car_manager.all_cars:
+        if car.distance(player) < 20:
+            game_is_on = False
+            scoreboard.game_over()
+    if player.is_at_finish():
+        player.goto_start()
+        car_manager.increase_speed()
+        scoreboard.update_scoreboard()
 screen.exitonclick()
